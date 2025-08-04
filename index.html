@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>A Dance of Fire and Ice 風デモ (JS版)</title>
+  <style>
+    body { background: #10101e; color: #fff; text-align: center; }
+    canvas { background: #10101e; margin-top: 24px; display:block; margin-left:auto; margin-right:auto;}
+  </style>
+</head>
+<body>
+  <h2>A Dance of Fire and Ice 風デモ (JS/HTML5 Canvas)</h2>
+  <p>画面をタップ/クリックすると球体が円周上を一歩進みます。</p>
+  <canvas id="adofai" width="640" height="480"></canvas>
+  <script>
+    const canvas = document.getElementById('adofai');
+    const ctx = canvas.getContext('2d');
+    const WIDTH = 640, HEIGHT = 480;
+    const CENTER = { x: WIDTH / 2, y: HEIGHT / 2 };
+    const RADIUS = 120, CIRCLE_RADIUS = 18, STEP_NUM = 32;
+    let step = 0;
+
+    function draw() {
+      ctx.clearRect(0, 0, WIDTH, HEIGHT);
+      // 軌道円
+      ctx.strokeStyle = "#646478";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(CENTER.x, CENTER.y, RADIUS, 0, 2 * Math.PI);
+      ctx.stroke();
+      // 2つの球体
+      [[255,50,50], [50,255,255]].forEach((color, i) => {
+        let angle = 2 * Math.PI * ((step + i * (STEP_NUM/2)) % STEP_NUM) / STEP_NUM;
+        let x = CENTER.x + Math.cos(angle) * RADIUS;
+        let y = CENTER.y + Math.sin(angle) * RADIUS;
+        ctx.beginPath();
+        ctx.arc(x, y, CIRCLE_RADIUS, 0, 2 * Math.PI);
+        ctx.fillStyle = `rgb(${color[0]},${color[1]},${color[2]})`;
+        ctx.fill();
+      });
+      // 中心
+      ctx.beginPath();
+      ctx.arc(CENTER.x, CENTER.y, 8, 0, 2*Math.PI);
+      ctx.fillStyle = "#b0b0dc";
+      ctx.fill();
+      // 説明
+      ctx.font = "bold 20px sans-serif";
+      ctx.fillStyle = "#fff";
+      ctx.fillText("タップ/クリックで進む", 28, 36);
+    }
+
+    // タップ・クリックイベント
+    canvas.addEventListener('mousedown', e => {
+      step = (step + 1) % STEP_NUM;
+      draw();
+    });
+    canvas.addEventListener('touchstart', e => {
+      e.preventDefault();
+      step = (step + 1) % STEP_NUM;
+      draw();
+    }, {passive:false});
+
+    // 初回描画
+    draw();
+  </script>
+</body>
+</html>
